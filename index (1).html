@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>:-) Glow — A Visual Language</title>
+<meta name="description" content="A visual language built from the oldest emotion on the internet. 1982.">
+<meta property="og:title" content=":-) Glow — A Visual Language">
+<meta property="og:description" content="Built from the oldest emotion on the internet.">
+<meta property="og:image" content="https://glowsmiley.vercel.app/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--g:#a3e635;--g2:#6b8f2a;--g3:#2a4a08;--g4:#0f1f04;--bg:#060606;--bg2:#0a0a0a}
+html,body{background:var(--bg);color:var(--g);font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.06) 3px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:9999}
+nav{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:0.5px solid var(--g3)}
+.logo{font-size:13px;color:var(--g2);letter-spacing:2px}.logo span{color:var(--g)}
+.nav-tag{font-size:10px;color:var(--g3);letter-spacing:3px}
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px 32px;text-align:center;border-bottom:0.5px solid var(--g4)}
+#main-glyph{font-size:96px;letter-spacing:-4px;color:var(--g);line-height:1;margin-bottom:24px;transition:opacity 0.1s;min-height:110px;display:flex;align-items:center;justify-content:center}
+#emotion-label{font-size:11px;color:var(--g2);letter-spacing:3px;margin-bottom:6px;min-height:14px}
+#emotion-desc{font-size:12px;color:var(--g3);letter-spacing:1px;min-height:14px;margin-bottom:28px}
+.tagline{font-size:10px;color:var(--g3);letter-spacing:2px;margin-bottom:4px}
+.tagline-main{font-size:13px;color:var(--g2);letter-spacing:2px}
+.grid-section{padding:24px;border-bottom:0.5px solid var(--g4)}
+.section-label{font-size:10px;color:var(--g3);letter-spacing:3px;margin-bottom:14px}
+.glyph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.glyph-card{background:var(--bg2);border:0.5px solid #111;border-radius:8px;padding:16px 10px;cursor:pointer;transition:border-color 0.15s,background 0.15s;display:flex;flex-direction:column;align-items:center;gap:6px}
+.glyph-card:hover{border-color:var(--g2);background:#0d1a04}
+.glyph-card.active{border-color:var(--g);background:#0f1f04}
+.card-sym{font-size:28px;letter-spacing:-1px;color:var(--g);line-height:1}
+.card-name{font-size:10px;color:var(--g2);letter-spacing:1px}
+.card-mood{font-size:9px;color:var(--g3)}
+.create-section{padding:24px;border-bottom:0.5px solid var(--g4)}
+.input-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+input{background:var(--bg2);border:0.5px solid var(--g3);border-radius:6px;padding:9px 12px;font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--g);outline:none}
+input:focus{border-color:var(--g2)}
+#custom-input{width:150px;letter-spacing:-1px}
+#custom-label-in{width:180px}
+#add-btn{background:transparent;border:0.5px solid var(--g2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:12px;padding:9px 18px;border-radius:6px;cursor:pointer;letter-spacing:1px;white-space:nowrap}
+#add-btn:hover{background:var(--g4)}
+.hint{font-size:10px;color:var(--g3);margin-top:8px;letter-spacing:0.5px;line-height:1.6}
+.community-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:14px}
+.community-card{background:var(--bg2);border:0.5px solid #111;border-radius:6px;padding:12px 8px;cursor:pointer;transition:border-color 0.12s;display:flex;flex-direction:column;align-items:center;gap:6px}
+.community-card:hover{border-color:var(--g3)}
+.community-card .card-sym{font-size:22px}
+.community-card .card-name{font-size:9px;color:var(--g3);text-align:center}
+.empty-msg{font-size:10px;color:var(--g4);letter-spacing:1px;padding:12px 0;grid-column:1/-1}
+footer{padding:28px 24px;text-align:center}
+.colophon{font-size:9px;color:var(--g4);letter-spacing:2px;line-height:2.2}
+.colophon span{color:var(--g3)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--g4);border:0.5px solid var(--g2);color:var(--g);font-family:'Share Tech Mono',monospace;font-size:11px;padding:10px 20px;border-radius:6px;letter-spacing:1px;opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:10000}
+.toast.show{opacity:1}
+@keyframes slowpulse{0%,100%{opacity:1}50%{opacity:.82}}
+@keyframes flicker{0%,90%,100%{opacity:1}92%{opacity:.3}95%{opacity:.9}97%{opacity:.5}99%{opacity:1}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><span>:-)</span> GLOW</div>
+  <div class="nav-tag">A VISUAL LANGUAGE</div>
+</nav>
+
+<section class="hero">
+  <div id="main-glyph" style="animation:slowpulse 3s ease-in-out infinite">:-)</div>
+  <div id="emotion-label">ORIGIN</div>
+  <div id="emotion-desc">the first human emotion in digital text — 1982</div>
+  <div class="tagline">built from</div>
+  <div class="tagline-main">THE OLDEST EMOTION ON THE INTERNET</div>
+</section>
+
+<section class="grid-section">
+  <div class="section-label">THE FAMILY — CLICK TO SET</div>
+  <div class="glyph-grid" id="core-grid"></div>
+</section>
+
+<section class="create-section">
+  <div class="section-label">EXPAND THE LANGUAGE — ADD YOUR OWN</div>
+  <div class="input-row">
+    <input id="custom-input" placeholder=":-)" maxlength="12" autocomplete="off" spellcheck="false" aria-label="Your glyph"/>
+    <input id="custom-label-in" placeholder="name the emotion" maxlength="24" autocomplete="off" spellcheck="false" aria-label="Emotion name"/>
+    <button id="add-btn" onclick="addGlyph()">+ ADD ↗</button>
+  </div>
+  <div class="hint">type any ascii combination &nbsp;:: &nbsp;:-/ &nbsp;( ) &nbsp;&gt;:-) &nbsp;T_T<br>name it. add it. it joins the language.</div>
+  <div class="community-grid" id="community-grid"></div>
+</section>
+
+<footer>
+  <div class="colophon">
+    THIS SYSTEM DESCENDS FROM <span>:-)</span> SCOTT E. FAHLMAN · 1982 · CARNEGIE MELLON UNIVERSITY<br>
+    THE ORIGINAL IS UNTOUCHED · WHAT YOU SEE HERE IS THE EVOLUTION<br>
+    <span>:-) GLOW · A VISUAL LANGUAGE · BUILT FROM THE OLDEST EMOTION ON THE INTERNET</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CORE=[
+  {sym:':-)',name:'ORIGIN',mood:'happy / open',desc:'the first human emotion in digital text'},
+  {sym:':-(',name:'GRIEF',mood:'sad / loss',desc:'the bracket flips. the feeling follows.'},
+  {sym:':-|',name:'NULL',mood:'void / flat',desc:'the mouth disappears. pure neutral.'},
+  {sym:'::',name:'EYES',mood:'watching / present',desc:'no mouth needed. raw attention.'},
+  {sym:':-',name:'OPEN',mood:'waiting / unfinished',desc:'the face with no resolution yet'},
+  {sym:'( )',name:'VESSEL',mood:'empty / receive',desc:'two brackets. hold anything inside.'},
+  {sym:'>:-)',name:'MISCHIEF',mood:'chaos / edge',desc:'a brow added before the face'},
+  {sym:':-*',name:'SEALED',mood:'silent / closed',desc:'mouth replaced by contact'},
+  {sym:':-/',name:'DRIFT',mood:'doubt / between',desc:'certainty dissolved into a diagonal'},
+  {sym:'T_T',name:'OVERFLOW',mood:'tears / excess',desc:'eyes as waterfalls. pure release.'},
+  {sym:'^_^',name:'PEACE',mood:'content / closed',desc:'eyes shut in joy. smile implied.'},
+  {sym:'(-_-)',name:'NUMB',mood:'flat / irony',desc:'deadpan. the world is a lot.'},
+];
+
+let activeIdx=0;
+let autoTimer=null;
+let community=[];
+
+// Load community from localStorage
+try{const s=localStorage.getItem('glow-community');if(s)community=JSON.parse(s);}catch(e){}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+function renderCore(){
+  const grid=document.getElementById('core-grid');
+  grid.innerHTML='';
+  CORE.forEach((g,i)=>{
+    const d=document.createElement('div');
+    d.className='glyph-card'+(i===activeIdx?' active':'');
+    d.innerHTML=`<div class="card-sym">${esc(g.sym)}</div><div class="card-name">${g.name}</div><div class="card-mood">${g.mood}</div>`;
+    d.onclick=()=>{clearInterval(autoTimer);activateCore(i);startAuto();};
+    grid.appendChild(d);
+  });
+}
+
+function activateCore(i){
+  activeIdx=i;
+  const g=CORE[i];
+  setHero(g.sym,g.name,g.desc);
+  renderCore();
+}
+
+function setHero(sym,label,desc){
+  const el=document.getElementById('main-glyph');
+  el.style.opacity='0';
+  setTimeout(()=>{
+    el.textContent=sym;
+    el.style.opacity='1';
+    document.getElementById('emotion-label').textContent=label;
+    document.getElementById('emotion-desc').textContent=desc;
+  },90);
+}
+
+function startAuto(){
+  clearInterval(autoTimer);
+  autoTimer=setInterval(()=>{
+    activeIdx=(activeIdx+1)%CORE.length;
+    setHero(CORE[activeIdx].sym,CORE[activeIdx].name,CORE[activeIdx].desc);
+    renderCore();
+  },2800);
+}
+
+function flickerHero(){
+  const el=document.getElementById('main-glyph');
+  el.style.animation='flicker 0.5s';
+  setTimeout(()=>{el.style.animation='slowpulse 3s ease-in-out infinite';},500);
+}
+setInterval(flickerHero,8000);
+
+function renderCommunity(){
+  const grid=document.getElementById('community-grid');
+  grid.innerHTML='';
+  if(!community.length){
+    grid.innerHTML='<div class="empty-msg">no glyphs yet — be the first to add one to the language</div>';
+    return;
+  }
+  community.forEach(g=>{
+    const d=document.createElement('div');
+    d.className='community-card';
+    d.innerHTML=`<div class="card-sym">${esc(g.sym)}</div><div class="card-name">${esc(g.label.toUpperCase())}</div>`;
+    d.onclick=()=>{clearInterval(autoTimer);setHero(g.sym,g.label.toUpperCase(),'community glyph');startAuto();};
+    grid.appendChild(d);
+  });
+}
+
+function addGlyph(){
+  const sym=document.getElementById('custom-input').value.trim();
+  const label=document.getElementById('custom-label-in').value.trim();
+  if(!sym){document.getElementById('custom-input').focus();return;}
+  if(!label){document.getElementById('custom-label-in').focus();return;}
+  community.unshift({sym,label});
+  if(community.length>60)community=community.slice(0,60);
+  try{localStorage.setItem('glow-community',JSON.stringify(community));}catch(e){}
+  document.getElementById('custom-input').value='';
+  document.getElementById('custom-label-in').value='';
+  renderCommunity();
+  clearInterval(autoTimer);
+  setHero(sym,label.toUpperCase(),'added to the language');
+  toast('[ '+sym+' ] added to the language');
+  startAuto();
+}
+
+document.getElementById('custom-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('custom-label-in').focus();});
+document.getElementById('custom-label-in').addEventListener('keydown',e=>{if(e.key==='Enter')addGlyph();});
+
+renderCore();
+startAuto();
+renderCommunity();
+</script>
+</body>
+</html>
